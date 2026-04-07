@@ -101,14 +101,14 @@ export const signIn = async (req, res) => {
 
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: true,
+            sameSite: "none",
             maxAge: 15 * 60 * 1000
         });
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: true,
+            sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
         const userResponse = {
@@ -144,8 +144,8 @@ export const signOut = async (req, res) => {
                 await user.save();
             }
         }
-        res.clearCookie("accessToken", { httpOnly: true, secure: false, sameSite: "strict" });
-        res.clearCookie("refreshToken", { httpOnly: true, secure: false, sameSite: "strict" });
+        res.clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: "none" });
+        res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "none" });
         return res.status(200).json({ message: "User signOut successfully" })
     } catch (error) {
         console.error("signOut Error:", error);
@@ -244,14 +244,14 @@ export const googleAuth = async (req, res) => {
 
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
-            sameSite: "strict",
-            secure: false,
+            sameSite: "none",
+            secure: true,
             maxAge: 15 * 60 * 1000
         });
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            sameSite: "strict",
-            secure: false,
+            sameSite: "none",
+            secure: true,
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
@@ -521,14 +521,14 @@ export const refreshAccessToken = async (req, res) => {
 
             res.cookie("accessToken", accessToken, {
                 httpOnly: true,
-                secure: false,
-                sameSite: "strict",
+                secure: true,
+                sameSite: "none",
                 maxAge: 15 * 60 * 1000
             });
             res.cookie("refreshToken", newRefreshToken, {
                 httpOnly: true,
-                secure: false,
-                sameSite: "strict",
+                secure: true,
+                sameSite: "none",
                 maxAge: 7 * 24 * 60 * 60 * 1000
             });
 
