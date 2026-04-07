@@ -61,7 +61,7 @@ Backend/
 
 ```bash
 # 1. Clone & install
-git clone https://github.com/your-username/local-service-backend.git
+git clone https://github.com/Jaydatt-kher/localease-backend.git
 cd local-service-backend
 npm install
 
