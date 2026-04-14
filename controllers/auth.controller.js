@@ -6,6 +6,13 @@ import jwt from "jsonwebtoken";
 import { sendMailOtp } from "../utils/mail.js";
 import { createOTPObject, verifyOtp } from "../utils/otp.js";
 import { sendSMSOtp } from "../utils/twilio.js";
+
+const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict"
+};
+
 const generateRefferalCode = async () => {
     let code;
     let exists = true;
@@ -100,15 +107,11 @@ export const signIn = async (req, res) => {
         await user.save();
 
         res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
+            ...cookieOptions,
             maxAge: 15 * 60 * 1000
         });
         res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
+            ...cookieOptions,
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
         const userResponse = {
@@ -144,8 +147,8 @@ export const signOut = async (req, res) => {
                 await user.save();
             }
         }
-        res.clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: "none" });
-        res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "none" });
+        res.clearCookie("accessToken", cookieOptions);
+        res.clearCookie("refreshToken", cookieOptions);
         return res.status(200).json({ message: "User signOut successfully" })
     } catch (error) {
         console.error("signOut Error:", error);
@@ -243,15 +246,11 @@ export const googleAuth = async (req, res) => {
         await user.save();
 
         res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            sameSite: "none",
-            secure: true,
+            ...cookieOptions,
             maxAge: 15 * 60 * 1000
         });
         res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            sameSite: "none",
-            secure: true,
+            ...cookieOptions,
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
@@ -520,15 +519,11 @@ export const refreshAccessToken = async (req, res) => {
             });
 
             res.cookie("accessToken", accessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "none",
+                ...cookieOptions,
                 maxAge: 15 * 60 * 1000
             });
             res.cookie("refreshToken", newRefreshToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "none",
+                ...cookieOptions,
                 maxAge: 7 * 24 * 60 * 60 * 1000
             });
 
