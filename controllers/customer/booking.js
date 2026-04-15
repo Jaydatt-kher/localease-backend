@@ -16,7 +16,7 @@ export const getMyBookings = async (req, res) => {
                 path: "provider",
                 populate: { path: "userId", select: "fullName mobileNo" }
             })
-            .sort({ scheduledTime: 1 }).lean();
+            .sort({ createdAt: -1 }).lean();
 
         const cleanBookings = bookings.map(b => {
             if (b.bookingStatus === 'completed' || b.bookingStatus === 'cancelled') {
