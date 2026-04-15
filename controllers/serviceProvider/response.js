@@ -14,12 +14,20 @@ function checkAvailability(availability, dateObj) {
         "You are currently in vacation mode. Disable it before responding to enquiries.",
     };
   }
+
+  dateObj = new Date(dateObj);
+
   const days = availability?.days ?? [];
   if (days.length === 0) return { valid: true };
 
-  const JS_DAY_MAP = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const dayName = JS_DAY_MAP[dateObj.getDay()];
-  const dayConfig = days.find((d) => d.day === dayName);
+  const dayName = dateObj.toLocaleString("en-IN", {
+    weekday: "short",
+    timeZone: "Asia/Kolkata",
+  });
+
+  const dayConfig = days.find(
+    (d) => d.day.toLowerCase() === dayName.toLowerCase()
+  );
 
   if (!dayConfig || !dayConfig.isOpen) {
     return {
@@ -27,20 +35,39 @@ function checkAvailability(availability, dateObj) {
       message: `You have marked ${dayName} as a day off in your availability schedule.`,
     };
   }
+
   if (dayConfig.startTime && dayConfig.endTime) {
     const [startH, startM] = dayConfig.startTime.split(":").map(Number);
     const [endH, endM] = dayConfig.endTime.split(":").map(Number);
-    const proposedMinutes = dateObj.getHours() * 60 + dateObj.getMinutes();
+
+    const hours = Number(
+      dateObj.toLocaleString("en-IN", {
+        hour: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Kolkata",
+      })
+    );
+
+    const minutes = Number(
+      dateObj.toLocaleString("en-IN", {
+        minute: "2-digit",
+        timeZone: "Asia/Kolkata",
+      })
+    );
+
+    const proposedMinutes = hours * 60 + minutes;
+
     if (
       proposedMinutes < startH * 60 + startM ||
       proposedMinutes > endH * 60 + endM
     ) {
       return {
         valid: false,
-        message: `Your working hours on ${dayName} are ${dayConfig.startTime}–${dayConfig.endTime}. The proposed time falls outside this window.`,
+        message: `Your working hours on ${dayName} are ${dayConfig.startTime}–${dayConfig.endTime}.`,
       };
     }
   }
+
   return { valid: true };
 }
 
